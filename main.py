@@ -50,6 +50,7 @@ class GLWrapper(object):
 		
 		self.shader.bind()
 		self.shader.setUniform1f("time", self.time)
+		self.shader.setUniform1f("screen", self.screen_width)
 		glScalef(self.screen_width, 1.0, 1.0)
 		self.quad.draw()
 		self.shader.release()
