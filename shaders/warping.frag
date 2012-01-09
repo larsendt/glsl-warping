@@ -115,18 +115,19 @@ float snoise(vec3 v)
 
 uniform float time;
 
-
 void main()
 {
-	float x = gl_FragCoord.x / 40.0;
-	float y = gl_FragCoord.y / 40.0;
+	float x = gl_FragCoord.x / 500.0;
+	float y = gl_FragCoord.y / 500.0;
 	float t = time/3.0;
-	float n = snoise(vec3(x, y, t));
-	n += 0.5 * (snoise(4.0 - vec3(x, y, t*1.4)));
-	n += 0.25 * (snoise(8.0 - vec3(x, y, t*2.0)));
-	n += 0.125 * (snoise(16.0 - vec3(x, y, t*2.8)));
-	n += 0.0625 * (snoise(32.0 - vec3(x, y, t*4.0)));
-	n += 0.03125 * (snoise(64.0 - vec3(x, y, t*5.6)));
+	float n = 0.0 * snoise(vec3(x, y, t));
+	
+	n += 0.5 * (snoise(vec3(4.0 * x, 4.0 * y, t*1.4)));
+	n += 0.25 * (snoise(vec3(8.0 * x, 8.0 * y, t*2.0)));
+	n += 0.125 * (snoise(vec3(16.0 * x, 16.0 * y, t*2.8)));
+	n += 0.0625 * (snoise(vec3(32.0 * x, 32.0 * y, t*4.0)));
+	n += 0.03125 * (snoise(vec3(64.0 * x, 64.0 * y, t*5.6)));
+	n = (n + 1.0) / 2.0;
 	n = n * 0.7;
 	gl_FragColor = vec4(n, n, n, 1.0);
 }
