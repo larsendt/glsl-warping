@@ -17,7 +17,7 @@ class GLWrapper(object):
 		glutInit(len(sys.argv), sys.argv)
 		glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE)
 		glutInitWindowSize(800, 600)
-		glutCreateWindow('Dynamic FBM Warping')
+		glutCreateWindow('Dynamic FBM Warping : High Quality')
 		#glutFullScreen()
 		glutDisplayFunc(self.draw)
 		glutMotionFunc(self.mouse_drag)
@@ -41,6 +41,7 @@ class GLWrapper(object):
 		self.fullscreen = False
 		self.scr_width = 800
 		self.scr_height = 600
+		self.qual_string = "High"
 	
 	def begin(self):
 		glutMainLoop()
@@ -50,7 +51,7 @@ class GLWrapper(object):
 			self.time = time.clock()
 			self.frames_drawn += 1
 			if time.clock() - self.second_timer > 1:
-				glutSetWindowTitle("Dynamic FBM Warping : %d FPS" % self.frames_drawn)
+				glutSetWindowTitle("Dynamic FBM Warping : %s Quality : %d FPS" % (self.qual_string, self.frames_drawn))
 				self.second_timer = time.clock()
 				self.frames_drawn = 0
 			glutPostRedisplay();
@@ -95,6 +96,10 @@ class GLWrapper(object):
 			sys.exit(0)
 		elif key == 'h':
 			self.high_quality = not self.high_quality
+			if self.high_quality:
+				self.qual_string = "High"
+			else:
+				self.qual_string = "Low"
 		elif key == 'f':
 			self.fullscreen = not self.fullscreen
 			if self.fullscreen:
