@@ -18,7 +18,7 @@ class GLWrapper(object):
 		glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE)
 		glutInitWindowSize(800, 600)
 		glutCreateWindow('Dynamic FBM Warping')
-		glutFullScreen()
+		#glutFullScreen()
 		glutDisplayFunc(self.draw)
 		glutMotionFunc(self.mouse_drag)
 		glutKeyboardFunc(self.keyboard)
@@ -31,10 +31,13 @@ class GLWrapper(object):
 		self.time = time.clock()
 		self.screen_width = 1.0
 		self.shader = shader.Shader("./shaders/warping.vert", "./shaders/warping.frag")
-		self.fps = 60
+		self.fps = 1200
 		self.idle_tick = 1.0/self.fps
 		self.paused = False
 		self.quad = quad.Quad()
+		self.high_quality = True
+		self.frames_drawn = 0
+		self.second_timer = 0
 	
 	def begin(self):
 		glutMainLoop()
@@ -42,6 +45,11 @@ class GLWrapper(object):
 	def idle(self):
 		if (time.clock() - self.time) > self.idle_tick:
 			self.time = time.clock()
+			self.frames_drawn += 1
+			if time.clock() - self.second_timer > 1:
+				glutSetWindowTitle("Dynamic FBM Warping : %d FPS" % self.frames_drawn)
+				self.second_timer = time.clock()
+				self.frames_drawn = 0
 			glutPostRedisplay();
 	
 	def draw(self):
@@ -51,6 +59,7 @@ class GLWrapper(object):
 		self.shader.bind()
 		self.shader.setUniform1f("time", self.time)
 		self.shader.setUniform1f("screen", self.screen_width)
+		self.shader.setUniform1f("high_quality", self.high_quality)
 		glScalef(self.screen_width, 1.0, 1.0)
 		self.quad.draw()
 		self.shader.release()
@@ -81,6 +90,8 @@ class GLWrapper(object):
 		if key == '\x1b': #escape key
 			print "Quit"
 			sys.exit(0)
+		elif key == 'h':
+			self.high_quality = not self.high_quality
 		elif key == ' ':
 			self.paused = not self.paused
 			
