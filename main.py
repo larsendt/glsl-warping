@@ -31,13 +31,16 @@ class GLWrapper(object):
 		self.time = time.clock()
 		self.screen_width = 1.0
 		self.shader = shader.Shader("./shaders/warping.vert", "./shaders/warping.frag")
-		self.fps = 1200
+		self.fps = 120
 		self.idle_tick = 1.0/self.fps
 		self.paused = False
 		self.quad = quad.Quad()
 		self.high_quality = True
 		self.frames_drawn = 0
 		self.second_timer = 0
+		self.fullscreen = False
+		self.scr_width = 800
+		self.scr_height = 600
 	
 	def begin(self):
 		glutMainLoop()
@@ -92,6 +95,12 @@ class GLWrapper(object):
 			sys.exit(0)
 		elif key == 'h':
 			self.high_quality = not self.high_quality
+		elif key == 'f':
+			self.fullscreen = not self.fullscreen
+			if self.fullscreen:
+				glutFullScreen()
+			else:
+				glutReshapeWindow(self.scr_width, self.scr_height)
 		elif key == ' ':
 			self.paused = not self.paused
 			
