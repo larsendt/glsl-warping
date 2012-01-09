@@ -30,7 +30,8 @@ class GLWrapper(object):
 		
 		self.time = time.clock()
 		self.screen_width = 1.0
-		self.shader = shader.Shader("./shaders/warping.vert", "./shaders/warping.frag")
+		self.hqshader = shader.Shader("./shaders/warping.vert", "./shaders/2pass_warping.frag")
+		self.lqshader = shader.Shader("./shaders/warping.vert", "./shaders/1pass_warping.frag")
 		self.fps = 120
 		self.idle_tick = 1.0/self.fps
 		self.paused = False
@@ -60,13 +61,20 @@ class GLWrapper(object):
 		glClear(GL_COLOR_BUFFER_BIT)
 		glLoadIdentity();
 		
-		self.shader.bind()
-		self.shader.setUniform1f("time", self.time)
-		self.shader.setUniform1f("screen", self.screen_width)
-		self.shader.setUniform1f("high_quality", self.high_quality)
-		glScalef(self.screen_width, 1.0, 1.0)
-		self.quad.draw()
-		self.shader.release()
+		if self.high_quality:
+			self.hqshader.bind()
+			self.hqshader.setUniform1f("time", self.time)
+			self.hqshader.setUniform1f("screen", self.screen_width)
+			glScalef(self.screen_width, 1.0, 1.0)
+			self.quad.draw()
+			self.hqshader.release()
+		else:
+			self.lqshader.bind()
+			self.lqshader.setUniform1f("time", self.time)
+			self.lqshader.setUniform1f("screen", self.screen_width)
+			glScalef(self.screen_width, 1.0, 1.0)
+			self.quad.draw()
+			self.lqshader.release()
 		
 		glFlush();
 		glutSwapBuffers();
