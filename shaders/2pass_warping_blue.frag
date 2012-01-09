@@ -117,7 +117,7 @@ uniform float time;
 
 float fbm(vec2 pos)
 {
-	float t = time / 20.0;
+	float t = time / 40.0;
 	float base = 0.75;
 	float n = 0.0 * snoise(vec3(base * pos.x, base * pos.y, t));
 	n += 0.5 * (snoise(vec3(2.0 * base * pos.x, 2.0 * base * pos.y, 1.4*t)));
@@ -132,15 +132,15 @@ float fbm(vec2 pos)
 void main()
 {
 	vec2 p = gl_TexCoord[0].xy;
-	vec2 q = vec2(fbm(p + vec2(0.0, 0.0)), fbm(p + vec2(5.2, 1.3)));
+	vec2 q = vec2(fbm(p + vec2(5.0, 5.0)), fbm(p + vec2(1.3, 5.3)));
 	vec2 r = vec2(fbm(p + 4.0*q + vec2(1.7, 9.2)), fbm(p + 4.0*q + vec2(8.3, 2.8)));
 	float n = fbm(p + 4.0*r);
 	
 	vec4 color1 = vec4(1.0, 1.0, 1.0, 1.0);
-	vec4 color2 = vec4(1.0, 0.7, 0.1, 1.0);
+	vec4 color2 = vec4(0.8, 0.8, 1.0, 1.0);
 	vec4 color3 = vec4(1.0, 1.0, 1.0, 1.0);
 	
-	vec4 pcolor = color1*5.0;
+	vec4 pcolor = color1*4.0;
 	
 	vec4 qcolor = mix(color2, pcolor, q.x*q.y*1.0); 
 	vec4 rcolor = mix(color3, qcolor, r.x*r.y*64.0); 

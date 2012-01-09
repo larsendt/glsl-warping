@@ -12,12 +12,16 @@ import math
 import random
 import quad
 
+ONEPASSLAVA = 0
+TWOPASSLAVA = 1
+TWOPASSBLUE = 2
+
 class GLWrapper(object):
 	def __init__(self):
 		glutInit(len(sys.argv), sys.argv)
 		glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE)
 		glutInitWindowSize(800, 600)
-		glutCreateWindow('Dynamic FBM Warping : High Quality')
+		glutCreateWindow('Dynamic FBM Warping')
 		#glutFullScreen()
 		glutDisplayFunc(self.draw)
 		glutMotionFunc(self.mouse_drag)
@@ -32,6 +36,7 @@ class GLWrapper(object):
 		self.screen_width = 1.0
 		self.hqshader = shader.Shader("./shaders/warping.vert", "./shaders/2pass_warping.frag")
 		self.lqshader = shader.Shader("./shaders/warping.vert", "./shaders/1pass_warping.frag")
+		self.blueshader = shader.Shader("./shaders/warping.vert", "./shaders/2pass_warping_blue.frag")
 		self.fps = 120
 		self.idle_tick = 1.0/self.fps
 		self.paused = False
@@ -42,7 +47,7 @@ class GLWrapper(object):
 		self.fullscreen = False
 		self.scr_width = 800
 		self.scr_height = 600
-		self.qual_string = "High"
+		self.current_shader = 2
 	
 	def begin(self):
 		glutMainLoop()
@@ -52,7 +57,7 @@ class GLWrapper(object):
 			self.time = time.clock()
 			self.frames_drawn += 1
 			if time.clock() - self.second_timer > 1:
-				glutSetWindowTitle("Dynamic FBM Warping : %s Quality : %d FPS" % (self.qual_string, self.frames_drawn))
+				glutSetWindowTitle("Dynamic FBM Warping : %d FPS" % self.frames_drawn)
 				self.second_timer = time.clock()
 				self.frames_drawn = 0
 			glutPostRedisplay();
@@ -61,20 +66,28 @@ class GLWrapper(object):
 		glClear(GL_COLOR_BUFFER_BIT)
 		glLoadIdentity();
 		
-		if self.high_quality:
-			self.hqshader.bind()
-			self.hqshader.setUniform1f("time", self.time)
-			self.hqshader.setUniform1f("screen", self.screen_width)
-			glScalef(self.screen_width, 1.0, 1.0)
-			self.quad.draw()
-			self.hqshader.release()
-		else:
+		if self.current_shader == ONEPASSLAVA:
 			self.lqshader.bind()
 			self.lqshader.setUniform1f("time", self.time)
 			self.lqshader.setUniform1f("screen", self.screen_width)
 			glScalef(self.screen_width, 1.0, 1.0)
 			self.quad.draw()
 			self.lqshader.release()
+		elif self.current_shader == TWOPASSLAVA:
+			self.hqshader.bind()
+			self.hqshader.setUniform1f("time", self.time)
+			self.hqshader.setUniform1f("screen", self.screen_width)
+			glScalef(self.screen_width, 1.0, 1.0)
+			self.quad.draw()
+			self.hqshader.release()
+		elif self.current_shader == TWOPASSBLUE:
+			self.blueshader.bind()
+			self.blueshader.setUniform1f("time", self.time)
+			self.blueshader.setUniform1f("screen", self.screen_width)
+			glScalef(self.screen_width, 1.0, 1.0)
+			self.quad.draw()
+			self.blueshader.release()
+			
 		
 		glFlush();
 		glutSwapBuffers();
@@ -103,11 +116,9 @@ class GLWrapper(object):
 			print "Quit"
 			sys.exit(0)
 		elif key == 'h':
-			self.high_quality = not self.high_quality
-			if self.high_quality:
-				self.qual_string = "High"
-			else:
-				self.qual_string = "Low"
+			self.current_shader += 1
+			if self.current_shader > 2:
+				self.current_shader = 0
 		elif key == 'f':
 			self.fullscreen = not self.fullscreen
 			if self.fullscreen:

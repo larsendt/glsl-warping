@@ -3,5 +3,5 @@ Perlin/Simplex noise courtesy of https://github.com/ashima/webgl-noise
 
 Controls: 
 	ESC - Quit
-	H - Toggle quality
+	H - Switch shaders
 	F - Toggle fullscreen
