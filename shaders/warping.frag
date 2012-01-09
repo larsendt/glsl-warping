@@ -115,20 +115,28 @@ float snoise(vec3 v)
 
 uniform float time;
 
+float fbm(vec2 pos)
+{
+	float x = pos.x / 500.0;
+	float y = pos.y / 500.0;
+	float t = time / 10.0;
+	float base = 0.75;
+	float n = 0.0 * snoise(vec3(base * x, base * y, t));
+	n += 0.5 * (snoise(vec3(2.0 * base * x, 2.0 * base * y, 1.4*t)));
+	n += 0.25 * (snoise(vec3(4.0 * base * x, 4.0 * base * y, 2.4*t)));
+	n += 0.125 * (snoise(vec3(8.0 * base * x, 8.0 * base * y, 3.4*t)));
+	n += 0.0625 * (snoise(vec3(16.0 * base * x, 16.0 * base * y, 4.4*t)));
+	n += 0.03125 * (snoise(vec3(32.0 * base * x, 32.0 * base * y, 5.4*t)));
+	n = (n + 1.0) / 2.0;
+	return n * 0.7;
+}
+
 void main()
 {
-	float x = gl_FragCoord.x / 500.0;
-	float y = gl_FragCoord.y / 500.0;
-	float t = time/3.0;
-	float n = 0.0 * snoise(vec3(x, y, t));
+	vec2 p = vec2(gl_FragCoord.x, gl_FragCoord.y);
+	vec2 q = vec2(fbm(p + vec2(0.0, 0.0)), fbm(p + vec2(5.2, 1.3)));
+	float n = fbm(p + 512.0*q);
 	
-	n += 0.5 * (snoise(vec3(4.0 * x, 4.0 * y, t*1.4)));
-	n += 0.25 * (snoise(vec3(8.0 * x, 8.0 * y, t*2.0)));
-	n += 0.125 * (snoise(vec3(16.0 * x, 16.0 * y, t*2.8)));
-	n += 0.0625 * (snoise(vec3(32.0 * x, 32.0 * y, t*4.0)));
-	n += 0.03125 * (snoise(vec3(64.0 * x, 64.0 * y, t*5.6)));
-	n = (n + 1.0) / 2.0;
-	n = n * 0.7;
 	gl_FragColor = vec4(n, n, n, 1.0);
 }
 
