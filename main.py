@@ -11,10 +11,7 @@ import time
 import math
 import random
 import quad
-
-ONEPASSLAVA = 0
-TWOPASSLAVA = 1
-TWOPASSBLUE = 2
+import os
 
 class GLWrapper(object):
 	def __init__(self):
@@ -34,9 +31,6 @@ class GLWrapper(object):
 		
 		self.time = time.clock()
 		self.screen_width = 1.0
-		self.hqshader = shader.Shader("./shaders/warping.vert", "./shaders/2pass_warping.frag")
-		self.lqshader = shader.Shader("./shaders/warping.vert", "./shaders/1pass_warping.frag")
-		self.blueshader = shader.Shader("./shaders/warping.vert", "./shaders/2pass_warping_blue.frag")
 		self.fps = 120
 		self.idle_tick = 1.0/self.fps
 		self.paused = False
@@ -47,7 +41,13 @@ class GLWrapper(object):
 		self.fullscreen = False
 		self.scr_width = 800
 		self.scr_height = 600
-		self.current_shader = 2
+		self.current_shader_index = 3
+		self.shaders = []
+		
+		fragfiles = [item for item in os.listdir("./shaders") if item.endswith("frag")]
+		for shaderfile in fragfiles:
+			print "Loading shader:", shaderfile
+			self.shaders.append(shader.Shader("./shaders/warping.vert", "./shaders/"+shaderfile))
 	
 	def begin(self):
 		glutMainLoop()
@@ -66,28 +66,13 @@ class GLWrapper(object):
 		glClear(GL_COLOR_BUFFER_BIT)
 		glLoadIdentity();
 		
-		if self.current_shader == ONEPASSLAVA:
-			self.lqshader.bind()
-			self.lqshader.setUniform1f("time", self.time)
-			self.lqshader.setUniform1f("screen", self.screen_width)
-			glScalef(self.screen_width, 1.0, 1.0)
-			self.quad.draw()
-			self.lqshader.release()
-		elif self.current_shader == TWOPASSLAVA:
-			self.hqshader.bind()
-			self.hqshader.setUniform1f("time", self.time)
-			self.hqshader.setUniform1f("screen", self.screen_width)
-			glScalef(self.screen_width, 1.0, 1.0)
-			self.quad.draw()
-			self.hqshader.release()
-		elif self.current_shader == TWOPASSBLUE:
-			self.blueshader.bind()
-			self.blueshader.setUniform1f("time", self.time)
-			self.blueshader.setUniform1f("screen", self.screen_width)
-			glScalef(self.screen_width, 1.0, 1.0)
-			self.quad.draw()
-			self.blueshader.release()
-			
+		shader = self.shaders[self.current_shader_index]
+		shader.bind()
+		shader.setUniform1f("time", self.time)
+		shader.setUniform1f("screen", self.screen_width)
+		glScalef(self.screen_width, 1.0, 1.0)
+		self.quad.draw()
+		shader.release()
 		
 		glFlush();
 		glutSwapBuffers();
@@ -116,9 +101,9 @@ class GLWrapper(object):
 			print "Quit"
 			sys.exit(0)
 		elif key == 'h':
-			self.current_shader += 1
-			if self.current_shader > 2:
-				self.current_shader = 0
+			self.current_shader_index += 1
+			if self.current_shader_index >= len(self.shaders):
+				self.current_shader_index = 0
 		elif key == 'f':
 			self.fullscreen = not self.fullscreen
 			if self.fullscreen:
@@ -135,7 +120,7 @@ def main():
 		gl_wrapper = GLWrapper()
 		gl_wrapper.begin()
 	except Exception as excep:
-		print excp
+		print excep
 		sys.exit(1)
 		
 	
