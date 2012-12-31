@@ -125,13 +125,12 @@ float fbm(vec2 pos)
     float base = 0.75;
     float y = pos.y * base;
     float x = pos.x * base;
-    //float n = 0.0; // * snoise(vec3(x, y, t));
     float n = snoise(vec3(x, y, t));
-    n += 0.5 * (snoise(vec3(2.0 * x, 2.0 * y, 1.4*t)));
-    n += 0.25 * (snoise(vec3(4.0 * x, 4.0 * y, 2.4*t)));
-    n += 0.125 * (snoise(vec3(8.0 * x, 8.0 * y, 3.4*t)));
-    n += 0.0625 * (snoise(vec3(16.0 * x, 16.0 * y, 4.4*t)));
-    n += 0.03125 * (snoise(vec3(32.0 * x, 32.0 * y, 5.4*t)));
+    n += 0.5 * (snoise(vec3(2.0 * x, 2.0 * y, t)));
+    n += 0.25 * (snoise(vec3(4.0 * x, 4.0 * y, 2.0*t)));
+    n += 0.125 * (snoise(vec3(8.0 * x, 8.0 * y, 3.0*t)));
+    n += 0.0625 * (snoise(vec3(16.0 * x, 16.0 * y, 4.0*t)));
+    n += 0.03125 * (snoise(vec3(32.0 * x, 32.0 * y, 5.0*t)));
     n = (n + 1.0) / 2.0;
     return n * 0.7;
 }
