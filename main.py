@@ -43,7 +43,7 @@ class GLWrapper(object):
         self.fullscreen = False
         self.scr_width = 800
         self.scr_height = 600
-        self.current_shader_index = 3
+        self.current_shader_index = 6
         self.shaders = []
         
         fragfiles = [item for item in os.listdir("./shaders") if item.endswith("frag")]
