@@ -118,6 +118,7 @@ float snoise(vec3 v)
 ///////////////////////////////////////
 
 uniform float time;
+uniform vec2 offset;
 
 float fbm(vec2 pos)
 {
@@ -145,14 +146,14 @@ vec4 getColor(vec2 p)
 	vec4 color1 = vec4(1.0, 0.5, 0.0, 1.0);
 	vec4 color2 = vec4(0.0, 0.3, 0.7, 1.0);
 	vec4 pcolor = color1*7.0;
-	vec4 qcolor = mix(color2, pcolor, q.x*q.y); 
+	vec4 qcolor = mix(color2, pcolor, q.x * q.y); 
 	
 	return qcolor * n;
 }
 
 void main()
 {   
-    vec4 color = getColor(gl_TexCoord[0].xy);
+    vec4 color = getColor(gl_TexCoord[0].xy + offset);
     gl_FragColor = vec4(color.rgb, 1.0);
 }
 

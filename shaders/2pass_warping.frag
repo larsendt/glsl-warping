@@ -114,6 +114,7 @@ float snoise(vec3 v)
 ///////////////////////////////////////
 
 uniform float time;
+uniform vec2 offset;
 
 float fbm(vec2 pos)
 {
@@ -131,7 +132,7 @@ float fbm(vec2 pos)
 
 void main()
 {
-	vec2 p = gl_TexCoord[0].xy;
+	vec2 p = gl_TexCoord[0].xy + offset;
 	vec2 q = vec2(fbm(p + vec2(0.0, 0.0)), fbm(p + vec2(5.2, 1.3)));
 	vec2 r = vec2(fbm(p + 4.0*q + vec2(1.7, 9.2)), fbm(p + 4.0*q + vec2(8.3, 2.8)));
 	float n = fbm(p + 4.0*r);

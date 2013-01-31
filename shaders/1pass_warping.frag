@@ -114,12 +114,13 @@ float snoise(vec3 v)
 ///////////////////////////////////////
 
 uniform float time;
+uniform vec2 offset;
 
 float fbm(vec2 pos)
 {
 	float t = time / 20.0;
 	float base = 0.75;
-	float n = 0.0 * snoise(vec3(base * pos.x, base * pos.y, t));
+	float n = 0.0;// * snoise(vec3(base * pos.x, base * pos.y, t));
 	n += 0.5 * (snoise(vec3(2.0 * base * pos.x, 2.0 * base * pos.y, 1.4*t)));
 	n += 0.25 * (snoise(vec3(4.0 * base * pos.x, 4.0 * base * pos.y, 2.4*t)));
     n += 0.125 * (snoise(vec3(8.0 * base * pos.x, 8.0 * base * pos.y, 3.4*t)));
@@ -131,8 +132,8 @@ float fbm(vec2 pos)
 
 void main()
 {
-	vec2 p = gl_TexCoord[0].xy;
-	vec2 q = vec2(fbm(p + vec2(0.0, 0.0)), fbm(p + vec2(5.2, 1.3)));
+	vec2 p = gl_TexCoord[0].xy + offset;
+	vec2 q = vec2(fbm(p), fbm(p));
 	float n = fbm(p + 4.0*q);
 	
 	vec4 color1 = vec4(1.0, 0.65, 0.0, 1.0);

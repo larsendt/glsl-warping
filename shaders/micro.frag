@@ -123,33 +123,29 @@ uniform vec2 offset;
 float fbm(vec2 pos)
 {
     float t = time / 5.0;
-    float base = 0.75;
+    float base = 0.516;
     float y = pos.y * base;
     float x = pos.x * base;
-    //float n = 0.0; // * snoise(vec3(x, y, t));
-    float n = snoise(vec3(x, y, t));
-    n += 0.5 * (snoise(vec3(2.0 * x, 2.0 * y, 1.4*t)));
-    n += 0.25 * (snoise(vec3(4.0 * x, 4.0 * y, 2.4*t)));
-    n += 0.125 * (snoise(vec3(8.0 * x, 8.0 * y, 3.4*t)));
-    n += 0.0625 * (snoise(vec3(16.0 * x, 16.0 * y, 4.4*t)));
-    n += 0.03125 * (snoise(vec3(32.0 * x, 32.0 * y, 5.4*t)));
-    n = (n + 1.0) / 2.0;
-    return n * 0.7;
+    float n = 0.0;
+    n += 1.000000 * (snoise(vec3(0.5 * x, 0.5 * y, 0.627969 * t)));
+n += 0.833333 * (snoise(vec3(4.000000 * x, 4.000000 * y, 1.255938 * t)));
+n += 0.500000 * (snoise(vec3(16.000000 * x, 16.000000 * y, 2.511876 * t)));
+
+    return (n + 1.0) / 2.0;
 }
 
 vec4 getColor(vec2 p)
 {
     float pval = fbm(p);
     float qval = fbm(vec2(pval));
-	vec2 q = vec2(qval);
-	float n = fbm(p + (q*2.0));
-	
-	vec4 color1 = vec4(1.0, 1.0, 1.0, 1.0);
-	vec4 color2 = vec4(0.0, 0.3, 0.7, 1.0);
-	vec4 pcolor = color1*7.0;
-	vec4 qcolor = mix(color2, pcolor, q.x*q.y); 
-	
-	return qcolor * n;
+    vec2 q = vec2(qval);
+    float n = fbm(p + (q*2.0));
+    
+    vec4 color1 = vec4(0.182, 0.234, 0.416, 1.0);
+    vec4 color2 = vec4(0.880, 0.567, 0.356, 1.0);
+    vec4 qcolor = mix(color1, color2, q.x * q.y); 
+    
+    return qcolor * n;
 }
 
 void main()
@@ -157,7 +153,5 @@ void main()
     vec4 color = getColor(gl_TexCoord[0].xy + offset);
     gl_FragColor = vec4(color.rgb, 1.0);
 }
-
-
 
 
